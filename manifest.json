@@ -8,16 +8,10 @@
   "theme_color": "#C6A87C",
   "icons": [
     {
-      "src": "https://via.placeholder.com/192/C6A87C/000000?text=NP",
-      "sizes": "192x192",
+      "src": "logo.png",
+      "sizes": "1024x1024",
       "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "https://via.placeholder.com/512/C6A87C/000000?text=Nairobi+Prime",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any"
+      "purpose": "any maskable"
     }
   ]
 }
