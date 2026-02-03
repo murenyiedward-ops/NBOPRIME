@@ -5,6 +5,7 @@ const ASSETS = [
   '/NBOPRIME/partnrr.html',
   '/NBOPRIME/admin.html',
   '/NBOPRIME/manifest.json'
+  '/NBOPRIME/logo.png'
 ];
 
 self.addEventListener('install', (e) => {
