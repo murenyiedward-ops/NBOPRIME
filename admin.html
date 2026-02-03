@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><link rel="manifest" href="manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js');
+  }
+</script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NP Admin | Sovereign Control</title>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg: #080808; --gold: #C6A87C; --surface: #111; --red: #ff4444; --green: #00ff88; }
+        body { font-family: 'Manrope', sans-serif; background: var(--bg); color: #fff; margin: 0; display: flex; }
+        
+        /* --- SIDEBAR --- */
+        nav { width: 240px; height: 100vh; background: #000; border-right: 1px solid #222; padding: 30px 20px; position: fixed; }
+        .nav-brand { font-weight: 800; color: var(--gold); letter-spacing: 1px; margin-bottom: 50px; }
+        .nav-link { padding: 15px 0; color: #666; cursor: pointer; display: block; text-decoration: none; font-size: 0.9rem; transition: 0.3s; }
+        .nav-link:hover, .nav-link.active { color: var(--gold); }
+
+        /* --- MAIN CONTENT --- */
+        main { flex: 1; margin-left: 240px; padding: 40px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 40px; }
+        .stat-card { background: var(--surface); padding: 25px; border-radius: 20px; border: 1px solid #222; }
+        .stat-val { font-size: 1.8rem; font-weight: 800; margin-bottom: 5px; }
+        .stat-label { color: #555; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; }
+
+        /* --- APPLICATION TABLE --- */
+        .table-container { background: var(--surface); border-radius: 24px; border: 1px solid #222; overflow: hidden; }
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; padding: 20px; background: #181818; color: var(--gold); font-size: 0.75rem; text-transform: uppercase; }
+        td { padding: 20px; border-bottom: 1px solid #1a1a1a; font-size: 0.9rem; }
+        
+        .badge-pending { color: #f39c12; background: rgba(243, 156, 18, 0.1); padding: 5px 10px; border-radius: 5px; font-size: 0.7rem; }
+        
+        .action-btn { 
+            padding: 8px 16px; border-radius: 8px; border: none; font-weight: 700; 
+            font-size: 0.7rem; cursor: pointer; transition: 0.3s;
+        }
+        .btn-approve { background: rgba(0, 255, 136, 0.1); color: var(--green); margin-right: 10px; }
+        .btn-approve:hover { background: var(--green); color: #000; }
+        .btn-reject { background: rgba(255, 68, 68, 0.1); color: var(--red); }
+        .btn-reject:hover { background: var(--red); color: #fff; }
+    </style>
+</head>
+<body>
+
+<nav>
+    <div class="nav-brand">NAIROBI PRIME ADMIN</div>
+    <div class="nav-link active">Dashboard</div><a href="index.html" class="nav-link" style="color:var(--gold); margin-top:20px;">View Live Site ↗</a>
+
+    <div class="nav-link">Merchant Verification</div>
+    <div class="nav-link">Revenue Tracking</div>
+    <div class="nav-link">System Health</div>
+    <div style="margin-top: 100px; font-size: 0.6rem; color: #333;">V 1.0.4 | SECURED</div>
+</nav>
+
+<main>
+    <h1 style="margin-bottom: 30px;">Overview</h1>
+    
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-val">KES 42.5k</div>
+            <div class="stat-label">Monthly Revenue</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-val">128</div>
+            <div class="stat-label">Active Listings</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-val">14</div>
+            <div class="stat-label">Pending Verifications</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-val">3,102</div>
+            <div class="stat-label">App Sessions Today</div>
+        </div>
+    </div>
+
+    <h2 style="font-size: 1.2rem; margin-bottom: 20px;">New Merchant Applications</h2>
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Business Name</th>
+                    <th>Category</th>
+                    <th>Contact</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="appTable">
+                <tr>
+                    <td>Apex Motors Kenya</td>
+                    <td>Automotive</td>
+                    <td>0712 345 678</td>
+                    <td><span class="badge-pending">PENDING VISIT</span></td>
+                    <td>
+                        <button class="action-btn btn-approve" onclick="handle(this, 'Approved')">AUTHORIZE</button>
+                        <button class="action-btn btn-reject" onclick="handle(this, 'Rejected')">REJECT</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>The Velvet Lounge</td>
+                    <td>Dining</td>
+                    <td>0722 000 111</td>
+                    <td><span class="badge-pending">PENDING VISIT</span></td>
+                    <td>
+                        <button class="action-btn btn-approve" onclick="handle(this, 'Approved')">AUTHORIZE</button>
+                        <button class="action-btn btn-reject" onclick="handle(this, 'Rejected')">REJECT</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Kilimani Executive Cuts</td>
+                    <td>Wellness</td>
+                    <td>0799 888 777</td>
+                    <td><span class="badge-pending">DOCS SUBMITTED</span></td>
+                    <td>
+                        <button class="action-btn btn-approve" onclick="handle(this, 'Approved')">AUTHORIZE</button>
+                        <button class="action-btn btn-reject" onclick="handle(this, 'Rejected')">REJECT</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+
+<script>
+    function handle(btn, status) {
+        const row = btn.parentElement.parentElement;
+        if(status === 'Approved') {
+            alert("Verification Success. Merchant is now LIVE with Gold Badge.");
+            row.style.opacity = '0.3';
+            row.style.pointerEvents = 'none';
+        } else {
+            const reason = prompt("Enter rejection reason for merchant notification:");
+            if(reason) row.remove();
+        }
+    }
+</script>
+
+</body>
+</html>

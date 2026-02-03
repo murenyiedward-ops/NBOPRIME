@@ -1,0 +1,20 @@
+{
+  "name": "Nairobi Prime",
+  "short_name": "NP",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#030303",
+  "theme_color": "#C6A87C",
+  "icons": [
+    {
+      "src": "https://via.placeholder.com/192/C6A87C/000000?text=NP",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://via.placeholder.com/512/C6A87C/000000?text=Nairobi+Prime",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

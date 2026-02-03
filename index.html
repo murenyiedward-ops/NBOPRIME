@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><link rel="manifest" href="manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js');
+  }
+</script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>NAIROBI PRIME | Master Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;700;800&family=Playfair+Display:ital,wght@0,600;0,800;1,600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #030303; --surface: #0f0f0f; --gold: #C6A87C;
+            --gold-gradient: linear-gradient(135deg, #C6A87C 0%, #F0E6D2 50%, #9C8255 100%);
+            --onyx-red: #FF3E3E; --text-main: #ffffff; --text-sec: #888; --accent: #2A2A2A;
+        }
+
+        body {
+            font-family: 'Manrope', sans-serif; background: var(--bg); color: var(--text-main);
+            margin: 0; padding-bottom: 120px; overflow-x: hidden;
+        }
+
+        /* --- SPLASH --- */
+        #splash-screen {
+            position: fixed; inset: 0; background: #000; z-index: 10000;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            transition: opacity 0.8s ease, visibility 0.8s;
+        }
+        .splash-logo {
+            font-family: 'Playfair Display', serif; font-size: 2.5rem; font-weight: 800;
+            background: var(--gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            animation: fadeUp 1s ease forwards; opacity: 0;
+        }
+        .loader-bar {
+            width: 0; height: 2px; background: var(--gold); margin-top: 20px;
+            box-shadow: 0 0 10px var(--gold); animation: load 2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+        @keyframes load { to { width: 150px; } }
+        @keyframes fadeUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        /* --- HEADER --- */
+        header {
+            padding: 15px 24px; position: sticky; top: 0; z-index: 999;
+            background: rgba(3,3,3,0.95); backdrop-filter: blur(15px);
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+        .brand { font-family: 'Playfair Display'; font-size: 1.4rem; font-weight: 800; }
+        .brand span { color: var(--gold); font-size: 0.8rem; vertical-align: super; }
+        
+        .btn-merchant {
+            background: rgba(198, 168, 124, 0.1); color: var(--gold); border: 1px solid var(--gold);
+            padding: 8px 14px; border-radius: 6px; font-size: 0.65rem; font-weight: 800;
+            text-transform: uppercase; cursor: pointer; text-decoration: none;
+        }
+
+        /* --- HERO --- */
+        .hero { padding: 30px 24px 10px; }
+        .hero h1 { font-family: 'Playfair Display'; font-size: 2.2rem; margin-bottom: 20px; line-height: 1.1; }
+        
+        .search-wrapper { position: relative; }
+        .search-box {
+            width: 100%; background: var(--surface); border: 1px solid var(--accent);
+            padding: 16px 20px 16px 50px; border-radius: 12px; color: white;
+            font-size: 0.95rem; box-sizing: border-box; outline: none; transition: 0.3s;
+        }
+        .search-box:focus { border-color: var(--gold); background: #151515; }
+        .search-icon { position: absolute; left: 18px; top: 50%; transform: translateY(-50%); color: var(--text-sec); }
+
+        /* --- TABS --- */
+        .tabs { display: flex; gap: 10px; overflow-x: auto; padding: 20px 24px; scrollbar-width: none; }
+        .tab {
+            padding: 10px 20px; background: var(--surface); border: 1px solid var(--accent);
+            border-radius: 50px; white-space: nowrap; font-size: 0.75rem; font-weight: 700;
+            color: var(--text-sec); cursor: pointer; transition: 0.3s;
+        }
+        .tab.active { background: var(--gold); color: #000; border-color: var(--gold); }
+
+        /* --- GRID --- */
+        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; padding: 0 24px; min-height: 300px; }
+        .card {
+            background: var(--surface); border-radius: 20px; overflow: hidden;
+            position: relative; border: 1px solid rgba(255,255,255,0.05); height: 270px;
+            transition: transform 0.3s ease;
+        }
+        .card.full { grid-column: span 2; height: 320px; }
+        
+        /* Interactive Hover Effect */
+        .card:hover .card-img { transform: scale(1.05); filter: brightness(0.9); }
+        .card-img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.7); transition: 0.5s ease; }
+        
+        .card-overlay {
+            position: absolute; bottom: 0; width: 100%; padding: 15px; box-sizing: border-box;
+            background: linear-gradient(to top, #000 30%, transparent); pointer-events: none;
+        }
+
+        .price { font-family: 'Playfair Display'; font-size: 1.1rem; font-weight: 800; color: var(--gold); }
+        .old-price { text-decoration: line-through; color: #666; font-size: 0.75rem; margin-right: 5px; }
+        
+        .btn-master {
+            width: 100%; padding: 10px; border-radius: 8px; font-weight: 800;
+            text-transform: uppercase; font-size: 0.65rem; letter-spacing: 1px;
+            cursor: pointer; border: none; margin-top: 10px; pointer-events: auto;
+        }
+        .btn-gold { background: var(--gold-gradient); color: #000; }
+        .btn-onyx { 
+            background: #111; color: var(--onyx-red); border: 1px solid var(--onyx-red);
+            box-shadow: 0 0 10px rgba(255, 62, 62, 0.15); animation: pulse 2s infinite;
+        }
+        @keyframes pulse { 0%, 100% { border-color: var(--onyx-red); } 50% { border-color: #500; } }
+
+        .bf-badge {
+            position: absolute; top: 12px; left: 12px; background: var(--onyx-red);
+            color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.55rem; font-weight: 800; z-index: 10;
+        }
+
+        /* --- MERCHANT MODAL --- */
+        #merchant-modal {
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 2000;
+            padding: 40px 24px; align-items: center; justify-content: center;
+        }
+        .modal-content { background: #111; padding: 30px; border-radius: 20px; border: 1px solid var(--gold); width: 100%; max-width: 400px; }
+        .modal-input { width: 100%; padding: 12px; margin-bottom: 12px; background: #222; border: 1px solid #333; color: white; border-radius: 8px; box-sizing: border-box;}
+
+        /* --- FOOTER & DOCK --- */
+        .footer-info {
+            padding: 40px 24px; text-align: center; margin-top: 40px; 
+            border-top: 1px solid rgba(255,255,255,0.05); color: #444;
+        }
+        .footer-info a { color: var(--text-sec); text-decoration: none; display: block; margin: 8px 0; font-size: 0.9rem; }
+        
+        .dock {
+            position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%);
+            background: rgba(10,10,10,0.9); backdrop-filter: blur(15px);
+            padding: 12px 35px; border-radius: 50px; display: flex; gap: 35px;
+            border: 1px solid rgba(255,255,255,0.15); z-index: 1000;
+        }
+        .dock-item { font-size: 1.3rem; cursor: pointer; opacity: 0.5; transition: 0.3s; }
+        .dock-item.active { opacity: 1; color: var(--gold); transform: translateY(-3px); }
+    </style>
+</head>
+<body>
+
+<div id="splash-screen">
+    <div class="splash-logo">NAIROBI PRIME</div>
+    <div class="loader-bar"></div>
+    <p style="color:#444; font-size:0.6rem; margin-top:10px; letter-spacing:3px;">EST. 2026</p>
+</div>
+
+<div id="merchant-modal">
+    <div class="modal-content">
+        <h2 style="font-family:'Playfair Display'; color:var(--gold); margin-top:0;">Partner Application</h2>
+        <p style="color:#888; font-size:0.8rem; margin-bottom:20px;">Join Nairobi's verified luxury network.</p>
+        <input type="text" class="modal-input" placeholder="Business Name">
+        <input type="text" class="modal-input" placeholder="Contact Person">
+        <input type="text" class="modal-input" placeholder="Phone Number">
+        <button class="btn-master btn-gold" onclick="alert('Application Sent! We will contact you shortly.')">SUBMIT REQUEST</button>
+        <button class="btn-master" style="background:transparent; color:#888; border:none; margin-top:0;" onclick="toggleModal()">Close</button>
+    </div>
+</div>
+
+<header>
+    <div class="brand">NAIROBI PRIME<span>™</span></div>
+    <a href="partnrr.html" class="btn-merchant" style="text-decoration:none;">Seller Portal</a>
+
+</header>
+
+<div class="hero">
+    <h1>Own the<br><span style="color:var(--gold)">Nairobi Lifestyle.</span></h1>
+    <div class="search-wrapper">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchInput" class="search-box" placeholder="Search experiences, assets, boutiques..." onkeyup="render()">
+    </div>
+</div>
+
+<div class="tabs">
+    <div class="tab active" onclick="setTab('All', this)">All Collections</div>
+    <div class="tab" onclick="setTab('Retail', this)">The Vault</div>
+    <div class="tab" onclick="setTab('Wellness', this)">Wellness</div>
+    <div class="tab" onclick="setTab('Gaming', this)">Entertainment</div>
+    <div class="tab" onclick="setTab('Estate', this)">Real Estate</div>
+</div>
+
+<div class="grid" id="mainGrid"></div>
+
+<footer class="footer-info">
+    <div style="font-family: 'Playfair Display'; font-size: 1.2rem; color:white; margin-bottom: 10px;">Contact Us</div>
+    <a href="tel:0710234326">📞 +254 710 234 326</a>
+    <a href="mailto:edwardmurenyi@gmail.com">✉️ murenyiedward@gmail.com</a>
+    <div style="margin-top:20px; font-size:0.6rem; letter-spacing:1px;">POWERED BY <span style="color:var(--gold)">SOMATEXT</span></div>
+</footer>
+
+<div class="dock">
+    <div class="dock-item active">🏠</div>
+    <div class="dock-item">💎</div>
+    <div class="dock-item">🔔</div>
+    <div class="dock-item">👤</div>
+</div>
+
+<script>
+    // DATABASE
+    const items = [
+        // RETAIL
+        { name: "iPhone 15 Pro Max", cat: "Retail", price: "195k", old: "240k", img: "https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=500", sale: true },
+        { name: "Rolex Oyster Perpetual", cat: "Retail", price: "1.4M", img: "https://images.unsplash.com/photo-1523170335258-f5ed11844a49?w=500", sale: false },
+        { name: "Jordan 4 'Black Cat'", cat: "Retail", price: "8k", old: "12k", img: "https://images.unsplash.com/photo-1637844527273-df62eb0499b5?w=500", sale: true },
+        { name: "MacBook Pro M3 Max", cat: "Retail", price: "450k", img: "https://images.unsplash.com/photo-1517336714731-489689fd1ca4?w=500", sale: false },
+        { name: "Dior Sauvage Elixir", cat: "Retail", price: "22k", img: "https://images.unsplash.com/photo-1594035910387-fea47794261f?w=500", sale: false },
+        { name: "Sony PS5 Slim", cat: "Retail", price: "65k", old: "80k", img: "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=500", sale: true },
+        
+        // WELLNESS
+        { name: "VIP Executive Shave", cat: "Wellness", price: "2,500", loc: "Kilimani", img: "https://images.unsplash.com/photo-1585747860715-2ba37e788b70?w=500", sale: false, full: true },
+        { name: "Full Body Swedish Spa", cat: "Wellness", price: "5k", old: "8k", loc: "Westlands", img: "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=500", sale: true },
+        { name: "HydraFacial Pro", cat: "Wellness", price: "12k", loc: "Gigiri", img: "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=500", sale: false },
+
+        // GAMING
+        { name: "PS5 VIP Suite", cat: "Gaming", price: "500/hr", loc: "Langata", img: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=500", sale: false, full: true },
+        { name: "VR Racing Sim", cat: "Gaming", price: "1,500", loc: "Two Rivers", img: "https://images.unsplash.com/photo-1592478411213-61535fdd861d?w=500", sale: false },
+
+        // ESTATE
+        { name: "Riverside Penthouse", cat: "Estate", price: "250k/mo", img: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=500", sale: false, full: true },
+        { name: "Karen Manor 5BR", cat: "Estate", price: "120M", img: "https://images.unsplash.com/photo-1600596542815-27b88e57e62f?w=500", sale: false },
+        { name: "Westlands Studio", cat: "Estate", price: "45k/mo", old: "55k", img: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=500", sale: true }
+    ];
+
+    let currentTab = 'All';
+
+    // INIT
+    window.onload = () => {
+        setTimeout(() => {
+            const splash = document.getElementById('splash-screen');
+            splash.style.opacity = '0';
+            setTimeout(() => splash.style.display = 'none', 800);
+        }, 2200);
+        render();
+    };
+
+    function toggleModal() {
+        const m = document.getElementById('merchant-modal');
+        m.style.display = (m.style.display === 'flex') ? 'none' : 'flex';
+    }
+
+    function setTab(cat, el) {
+        currentTab = cat;
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        el.classList.add('active');
+        render();
+    }
+
+    // WHATSAPP INTEGRATION
+    function contactSeller(name, price) {
+        // Simple message encoding
+        const msg = `Hello, I am interested in [${name}] listed for KES ${price} on Nairobi Prime.`;
+        const url = `https://wa.me/254710234326?text=${encodeURIComponent(msg)}`;
+        window.open(url, '_blank');
+    }
+
+    function render() {
+        const query = document.getElementById('searchInput').value.toLowerCase();
+        const grid = document.getElementById('mainGrid');
+        
+        const filtered = items.filter(i => {
+            const matchTab = currentTab === 'All' || i.cat.includes(currentTab);
+            const matchSearch = i.name.toLowerCase().includes(query);
+            return matchTab && matchSearch;
+        });
+
+        if (filtered.length === 0) {
+            grid.innerHTML = `
+                <div style="grid-column:span 2; text-align:center; padding:50px; color:#555;">
+                    <div style="font-size:2rem; margin-bottom:10px;">🔍</div>
+                    <p>No collections found matching your criteria.</p>
+                </div>
+            `;
+            return;
+        }
+
+        grid.innerHTML = filtered.map(i => {
+            const btnClass = i.sale ? 'btn-onyx' : 'btn-gold';
+            const btnText = i.sale ? 'Onyx Deal' : (i.cat === 'Estate' ? 'Inquire' : 'Secure');
+            const badge = i.sale ? `<div class="bf-badge">BLACK FRIDAY</div>` : '';
+            
+            return `
+                <div class="card ${i.full ? 'full' : ''}">
+                    ${badge}
+                    <img src="${i.img}" class="card-img" loading="lazy">
+                    <div class="card-overlay">
+                        <span style="font-size:0.55rem; color:var(--gold); font-weight:800; letter-spacing:1px;">${i.cat.toUpperCase()}</span>
+                        <h3 style="margin:4px 0 8px 0; font-size:1rem; line-height:1.2;">${i.name}</h3>
+                        <div style="display:flex; align-items:center; justify-content:space-between;">
+                            <div>
+                                ${i.old ? `<span class="old-price">KES ${i.old}</span>` : ''}
+                                <span class="price">KES ${i.price}</span>
+                            </div>
+                        </div>
+                        <button class="btn-master ${btnClass}" onclick="contactSeller('${i.name}', '${i.price}')">${btnText} VIA WHATSAPP</button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+</script>
+</body>
+</html>
