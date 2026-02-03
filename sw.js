@@ -4,13 +4,14 @@ const ASSETS = [
   '/NBOPRIME/index.html',
   '/NBOPRIME/partnrr.html',
   '/NBOPRIME/admin.html',
-  '/NBOPRIME/manifest.json'
+  '/NBOPRIME/manifest.json',
   '/NBOPRIME/logo.png'
 ];
 
 self.addEventListener('install', (e) => {
   e.waitUntil(
     caches.open(CACHE_NAME).then(cache => {
+      console.log('Nairobi Prime: Caching System Files');
       return cache.addAll(ASSETS);
     })
   );
